@@ -40,11 +40,16 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
     }
 
     if (username !== user.username) {
-      const { data: existingUser } = await supabase
+      const { data: existingUser, error: checkError } = await supabase
         .from("users")
         .select("id")
         .eq("username", username)
         .single()
+
+      if (checkError && checkError.code !== "PGRST116") {
+        setError("Failed to check username availability")
+        return
+      }
 
       if (existingUser) {
         setError("Username is already taken")

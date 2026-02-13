@@ -99,7 +99,9 @@ export function PoemCard({ poem, currentUserId, showActions = true }: PoemCardPr
 
   const truncateContent = (text: string, maxLength: number = 300) => {
     if (text.length <= maxLength) return text
-    return text.slice(0, maxLength) + "..."
+    const truncated = text.slice(0, maxLength)
+    const lastSpace = truncated.lastIndexOf(' ')
+    return (lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated) + "..."
   }
 
   return (
