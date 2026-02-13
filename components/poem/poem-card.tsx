@@ -107,7 +107,7 @@ export function PoemCard({ poem, currentUserId, showActions = true }: PoemCardPr
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <Link
-            href={`/profile/${poem.author.username}`}
+            href={`/${poem.author.username}`}
             className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
             onClick={(e) => e.stopPropagation()}
           >

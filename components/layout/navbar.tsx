@@ -92,7 +92,7 @@ export function Navbar({ user }: NavbarProps) {
                         </div>
                         <div className="py-1">
                           <Link
-                            href={`/profile/${user.username}`}
+                            href={`/${user.username}`}
                             className="flex items-center px-4 py-2 text-sm hover:bg-accent"
                             onClick={() => setProfileMenuOpen(false)}
                           >
@@ -184,7 +184,7 @@ export function Navbar({ user }: NavbarProps) {
                     Create Poem
                   </Button>
                 </Link>
-                <Link href={`/profile/${user.username}`} onClick={closeMobileMenu}>
+                <Link href={`/${user.username}`} onClick={closeMobileMenu}>
                   <Button variant="ghost" className="w-full justify-start">
                     <User className="h-4 w-4 mr-2" />
                     Profile
