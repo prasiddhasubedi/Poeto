@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { createClient } from "@/lib/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 
 interface PoemFormProps {
   onCancel?: () => void
@@ -25,17 +26,20 @@ export function PoemForm({ onCancel, initialValues, poemId }: PoemFormProps) {
   const [error, setError] = React.useState<string | null>(null)
   const router = useRouter()
   const supabase = createClient()
+  const { addToast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!content.trim()) {
       setError("Poem content is required")
+      addToast("Poem content is required", "error")
       return
     }
 
     if (content.length > MAX_CONTENT_LENGTH) {
       setError(`Poem content must be less than ${MAX_CONTENT_LENGTH} characters`)
+      addToast(`Poem content must be less than ${MAX_CONTENT_LENGTH} characters`, "error")
       return
     }
 
@@ -47,6 +51,7 @@ export function PoemForm({ onCancel, initialValues, poemId }: PoemFormProps) {
       
       if (!user) {
         setError("You must be signed in to create a poem")
+        addToast("You must be signed in to create a poem", "error")
         setIsSubmitting(false)
         return
       }
@@ -64,6 +69,7 @@ export function PoemForm({ onCancel, initialValues, poemId }: PoemFormProps) {
           .eq("author_id", user.id)
 
         if (updateError) throw updateError
+        addToast("Poem updated successfully!", "success")
       } else {
         const { error: insertError } = await supabase
           .from("poems")
@@ -74,13 +80,16 @@ export function PoemForm({ onCancel, initialValues, poemId }: PoemFormProps) {
           })
 
         if (insertError) throw insertError
+        addToast("Poem published successfully!", "success")
       }
 
       router.push("/home")
       router.refresh()
     } catch (err) {
       console.error("Error saving poem:", err)
-      setError("Failed to save poem. Please try again.")
+      const errorMsg = "Failed to save poem. Please try again."
+      setError(errorMsg)
+      addToast(errorMsg, "error")
       setIsSubmitting(false)
     }
   }

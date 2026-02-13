@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const router = useRouter()
   const supabase = createClient()
+  const { addToast } = useToast()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,10 +31,13 @@ export default function LoginPage() {
 
       if (error) throw error
 
+      addToast("Successfully signed in!", "success")
       router.push("/home")
       router.refresh()
     } catch (err: any) {
-      setError(err.message || "An error occurred during login")
+      const errorMessage = err.message || "An error occurred during login"
+      setError(errorMessage)
+      addToast(errorMessage, "error")
     } finally {
       setLoading(false)
     }
@@ -52,7 +57,9 @@ export default function LoginPage() {
 
       if (error) throw error
     } catch (err: any) {
-      setError(err.message || "An error occurred during Google login")
+      const errorMessage = err.message || "An error occurred during Google login"
+      setError(errorMessage)
+      addToast(errorMessage, "error")
       setLoading(false)
     }
   }

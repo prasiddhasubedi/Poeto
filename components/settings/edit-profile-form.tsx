@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardDescription } from "@/components/ui/card"
 import { validateUsername } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
 import type { User } from "@/types"
 
 interface EditProfileFormProps {
@@ -23,19 +24,24 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
   const [error, setError] = React.useState("")
   const router = useRouter()
   const supabase = createClient()
+  const { addToast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
     if (!displayName.trim()) {
-      setError("Display name is required")
+      const msg = "Display name is required"
+      setError(msg)
+      addToast(msg, "error")
       return
     }
 
     const usernameValidation = validateUsername(username)
     if (!usernameValidation.valid) {
-      setError(usernameValidation.error || "Invalid username")
+      const msg = usernameValidation.error || "Invalid username"
+      setError(msg)
+      addToast(msg, "error")
       return
     }
 
@@ -47,12 +53,16 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
         .single()
 
       if (checkError && checkError.code !== "PGRST116") {
-        setError("Failed to check username availability")
+        const msg = "Failed to check username availability"
+        setError(msg)
+        addToast(msg, "error")
         return
       }
 
       if (existingUser) {
-        setError("Username is already taken")
+        const msg = "Username is already taken"
+        setError(msg)
+        addToast(msg, "error")
         return
       }
     }
@@ -71,11 +81,14 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
 
       if (updateError) throw updateError
 
+      addToast("Profile updated successfully!", "success")
       router.push(`/${username}`)
       router.refresh()
     } catch (err) {
       console.error("Error updating profile:", err)
-      setError("Failed to update profile. Please try again.")
+      const msg = "Failed to update profile. Please try again."
+      setError(msg)
+      addToast(msg, "error")
       setIsLoading(false)
     }
   }

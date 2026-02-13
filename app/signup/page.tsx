@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { validateUsername, validateEmail } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
 
 export default function SignupPage() {
   const [email, setEmail] = useState("")
@@ -18,6 +19,7 @@ export default function SignupPage() {
   const [error, setError] = useState("")
   const router = useRouter()
   const supabase = createClient()
+  const { addToast } = useToast()
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,26 +28,34 @@ export default function SignupPage() {
 
     // Validate inputs
     if (!validateEmail(email)) {
-      setError("Please enter a valid email address")
+      const msg = "Please enter a valid email address"
+      setError(msg)
+      addToast(msg, "error")
       setLoading(false)
       return
     }
 
     const usernameValidation = validateUsername(username)
     if (!usernameValidation.valid) {
-      setError(usernameValidation.error || "Invalid username")
+      const msg = usernameValidation.error || "Invalid username"
+      setError(msg)
+      addToast(msg, "error")
       setLoading(false)
       return
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters")
+      const msg = "Password must be at least 6 characters"
+      setError(msg)
+      addToast(msg, "error")
       setLoading(false)
       return
     }
 
     if (!displayName.trim()) {
-      setError("Display name is required")
+      const msg = "Display name is required"
+      setError(msg)
+      addToast(msg, "error")
       setLoading(false)
       return
     }
@@ -78,11 +88,14 @@ export default function SignupPage() {
 
         if (profileError) throw profileError
 
+        addToast("Account created successfully!", "success")
         router.push("/home")
         router.refresh()
       }
     } catch (err: any) {
-      setError(err.message || "An error occurred during signup")
+      const errorMessage = err.message || "An error occurred during signup"
+      setError(errorMessage)
+      addToast(errorMessage, "error")
     } finally {
       setLoading(false)
     }
@@ -102,7 +115,9 @@ export default function SignupPage() {
 
       if (error) throw error
     } catch (err: any) {
-      setError(err.message || "An error occurred during Google signup")
+      const errorMessage = err.message || "An error occurred during Google signup"
+      setError(errorMessage)
+      addToast(errorMessage, "error")
       setLoading(false)
     }
   }

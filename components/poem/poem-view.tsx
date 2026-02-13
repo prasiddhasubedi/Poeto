@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { CommentComponent } from "@/components/poem/comment"
 import { formatRelativeTime } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
 import type { Poem, Comment, User } from "@/types"
 
 interface PoemWithDetails extends Poem {
@@ -37,6 +38,7 @@ export function PoemView({
   const [isDeleting, setIsDeleting] = React.useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const { addToast } = useToast()
   const isOwner = currentUserId === poem.author_id
 
   const handleLike = async () => {
@@ -68,6 +70,7 @@ export function PoemView({
       console.error("Error updating like:", error)
       setIsLiked(!newIsLiked)
       setLikesCount(likesCount)
+      addToast("Failed to update like", "error")
     }
   }
 
@@ -115,10 +118,11 @@ export function PoemView({
 
       setComments([newComment, ...comments])
       setCommentText("")
+      addToast("Comment added successfully", "success")
       router.refresh()
     } catch (error) {
       console.error("Error posting comment:", error)
-      alert("Failed to post comment")
+      addToast("Failed to post comment", "error")
     } finally {
       setIsSubmitting(false)
     }
@@ -137,10 +141,11 @@ export function PoemView({
 
       if (error) throw error
 
+      addToast("Poem deleted successfully", "success")
       router.push("/home")
     } catch (error) {
       console.error("Error deleting poem:", error)
-      alert("Failed to delete poem")
+      addToast("Failed to delete poem", "error")
       setIsDeleting(false)
     }
   }

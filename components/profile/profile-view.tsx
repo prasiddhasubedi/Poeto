@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { PoemCard } from "@/components/poem/poem-card"
 import { createClient } from "@/lib/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 import type { User, Poem } from "@/types"
 import Link from "next/link"
 
@@ -35,6 +36,7 @@ export function ProfileView({
   const [isLoading, setIsLoading] = React.useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const { addToast } = useToast()
 
   const handleFollow = async () => {
     if (!currentUserId) {
@@ -56,6 +58,7 @@ export function ProfileView({
           following_id: user.id,
         })
         if (error) throw error
+        addToast(`You are now following ${user.display_name}`, "success")
       } else {
         const { error } = await supabase
           .from("followers")
@@ -63,13 +66,14 @@ export function ProfileView({
           .eq("follower_id", currentUserId)
           .eq("following_id", user.id)
         if (error) throw error
+        addToast(`Unfollowed ${user.display_name}`, "success")
       }
       router.refresh()
     } catch (error) {
       console.error("Error updating follow:", error)
       setIsFollowing(!newIsFollowing)
       setFollowersCount(followersCount)
-      alert("Failed to update follow status")
+      addToast("Failed to update follow status", "error")
     } finally {
       setIsLoading(false)
     }

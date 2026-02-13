@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Avatar } from "@/components/shared/avatar"
 import { formatRelativeTime } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 
 interface PoemCardProps {
   poem: {
@@ -38,6 +39,7 @@ export function PoemCard({ poem, currentUserId, showActions = true }: PoemCardPr
   const [isDeleting, setIsDeleting] = React.useState(false)
   const router = useRouter()
   const supabase = createClient()
+  const { addToast } = useToast()
 
   const isOwner = currentUserId === poem.author.id
 
@@ -73,6 +75,7 @@ export function PoemCard({ poem, currentUserId, showActions = true }: PoemCardPr
       console.error("Error updating like:", error)
       setIsLiked(!newIsLiked)
       setLikesCount(likesCount)
+      addToast("Failed to update like", "error")
     }
   }
 
@@ -89,10 +92,11 @@ export function PoemCard({ poem, currentUserId, showActions = true }: PoemCardPr
 
       if (error) throw error
 
+      addToast("Poem deleted successfully", "success")
       router.refresh()
     } catch (error) {
       console.error("Error deleting poem:", error)
-      alert("Failed to delete poem")
+      addToast("Failed to delete poem", "error")
       setIsDeleting(false)
     }
   }

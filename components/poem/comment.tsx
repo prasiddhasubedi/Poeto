@@ -6,6 +6,7 @@ import { Avatar } from "@/components/shared/avatar"
 import { Button } from "@/components/ui/button"
 import { formatRelativeTime } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 import type { Comment } from "@/types"
 
 interface CommentProps {
@@ -17,6 +18,7 @@ interface CommentProps {
 export function CommentComponent({ comment, currentUserId, onDelete }: CommentProps) {
   const [isDeleting, setIsDeleting] = React.useState(false)
   const supabase = createClient()
+  const { addToast } = useToast()
   const isOwner = currentUserId === comment.user_id
 
   const handleDelete = async () => {
@@ -32,10 +34,11 @@ export function CommentComponent({ comment, currentUserId, onDelete }: CommentPr
 
       if (error) throw error
 
+      addToast("Comment deleted successfully", "success")
       onDelete?.()
     } catch (error) {
       console.error("Error deleting comment:", error)
-      alert("Failed to delete comment")
+      addToast("Failed to delete comment", "error")
       setIsDeleting(false)
     }
   }

@@ -23,6 +23,7 @@ interface NavbarProps {
 export function Navbar({ user }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [profileMenuOpen, setProfileMenuOpen] = React.useState(false)
+  const [searchQuery, setSearchQuery] = React.useState("")
   const router = useRouter()
   const supabase = createClient()
 
@@ -30,6 +31,13 @@ export function Navbar({ user }: NavbarProps) {
     await supabase.auth.signOut()
     router.push("/login")
     router.refresh()
+  }
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
   }
 
   const closeMobileMenu = () => setMobileMenuOpen(false)
@@ -46,14 +54,16 @@ export function Navbar({ user }: NavbarProps) {
 
           {/* Desktop Search Bar */}
           <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
+            <form onSubmit={handleSearch} className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Search poems, poets..."
                 className="pl-9"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </form>
           </div>
 
           {/* Desktop Navigation */}
@@ -157,14 +167,16 @@ export function Navbar({ user }: NavbarProps) {
           <div className="md:hidden border-t py-4">
             {/* Mobile Search */}
             <div className="mb-4">
-              <div className="relative">
+              <form onSubmit={handleSearch} className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search poems, poets..."
                   className="pl-9"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
-              </div>
+              </form>
             </div>
 
             {user ? (
