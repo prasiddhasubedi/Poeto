@@ -97,14 +97,14 @@ export function ProfileView({
               )}
 
               <div className="flex items-center space-x-4 text-sm">
-                <button className="hover:underline">
+                <Link href={`/${user.username}/followers`} className="hover:underline">
                   <span className="font-semibold">{followersCount}</span>{" "}
                   <span className="text-muted-foreground">Followers</span>
-                </button>
-                <button className="hover:underline">
+                </Link>
+                <Link href={`/${user.username}/following`} className="hover:underline">
                   <span className="font-semibold">{followingCount}</span>{" "}
                   <span className="text-muted-foreground">Following</span>
-                </button>
+                </Link>
               </div>
             </div>
 

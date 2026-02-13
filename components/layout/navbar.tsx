@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Search, Menu, X, PenLine, LogOut, User, Home } from "lucide-react"
+import { Search, Menu, X, PenLine, LogOut, User, Home, Shield } from "lucide-react"
 import { Avatar } from "@/components/shared/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,6 +16,7 @@ interface NavbarProps {
     username: string
     display_name: string
     profile_picture_url: string | null
+    is_admin?: boolean
   } | null
 }
 
@@ -107,6 +108,16 @@ export function Navbar({ user }: NavbarProps) {
                             <Home className="h-4 w-4 mr-2" />
                             Home
                           </Link>
+                          {user.is_admin && (
+                            <Link
+                              href="/admin"
+                              className="flex items-center px-4 py-2 text-sm hover:bg-accent"
+                              onClick={() => setProfileMenuOpen(false)}
+                            >
+                              <Shield className="h-4 w-4 mr-2" />
+                              Admin Dashboard
+                            </Link>
+                          )}
                           <button
                             onClick={handleSignOut}
                             className="flex items-center w-full px-4 py-2 text-sm hover:bg-accent text-destructive"
@@ -190,6 +201,14 @@ export function Navbar({ user }: NavbarProps) {
                     Profile
                   </Button>
                 </Link>
+                {user.is_admin && (
+                  <Link href="/admin" onClick={closeMobileMenu}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <Shield className="h-4 w-4 mr-2" />
+                      Admin Dashboard
+                    </Button>
+                  </Link>
+                )}
                 <Button
                   variant="ghost"
                   className="w-full justify-start text-destructive"
